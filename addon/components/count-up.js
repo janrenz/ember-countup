@@ -3,18 +3,23 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   classNames: ['ember-countup'],
   tagName: 'span',
-
+  countUp: null,
   didInsertElement() {
     this._insertAndStartCountUp();
   },
 
-  changed: Ember.observer('startVal', 'endVal', 'decimals', 'duration', 'useEasing', 'useGrouping', 'separator', 'decimal', 'prefix', 'suffix', function() {
+  changed: Ember.observer('startVal', 'decimals', 'duration', 'useEasing', 'useGrouping', 'separator', 'decimal', 'prefix', 'suffix', function() {
     this._insertAndStartCountUp();
   }),
-
+  changed_value: Ember.observer('endVal', function() {
+    this._update();
+  }),
+  _update(){
+    this.get('countUp').update(this.get('endVal'));
+  },
   _insertAndStartCountUp() {
     Ember.run.next(() => {
-      new CountUp(
+      this.set('countUp', new CountUp(
         this.get('elementId'),
         this.get('startVal') || 0,
         this.get('endVal') || 0,
@@ -28,8 +33,8 @@ export default Ember.Component.extend({
           prefix: this.get('prefix') || '',
           suffix: this.get('suffix') || ''
         }
-      ).start();
+      ));
+      this.get('countUp').start();
     });
   }
 });
-
